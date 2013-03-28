@@ -1,5 +1,6 @@
 
 var Stream = require('stream')
+var pull   = require('pull-stream')
 
 module.exports = duplex
 
@@ -21,7 +22,7 @@ function duplex (reader, read) {
       cbs.shift()(true)      
   }
 
-  s.source = function (end, cb) {
+  s.source = pull.addPipe(function (end, cb) {
     if(input.length) {
       cb(null, input.shift())
       if(!input.length)
@@ -31,7 +32,7 @@ function duplex (reader, read) {
       cb(ended)
     else
       cbs.push(cb)
-  }
+  })
 
   if(reader) reader(s.source)
 
