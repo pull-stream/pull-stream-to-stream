@@ -17,18 +17,20 @@ test('header', function (t) {
 
     stream.pipe(d).pipe(stream)
 
-    d.sink(defer) //pass output to source
+    defer.pipe(d.sink) //pass output to source
 
     //pull one item "HEADER" from source.
-    d.source(null, function (err, len) {
-      defer.resolve(
-        pull.infinite()
-        .pipe(pull.take(Number(len)))
-        .pipe(pull.map(function (n) {
-          a.push(n)
-          return n + '\n'
-        }))
-      )
+    d.source.pipe(function (read) {
+      read(null, function (err, len) {
+        defer.resolve(
+          pull.infinite()
+          .pipe(pull.take(Number(len)))
+          .pipe(pull.map(function (n) {
+            a.push(n)
+            return n + '\n'
+          }))
+        )
+      })
     })
 
   }).listen(0, function () {
