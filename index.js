@@ -57,7 +57,6 @@ function duplex (reader, read) {
       return s.emit('end')
 
     read(null, function next (end, data) {
-      console.log('R', end, data)
       if(s.paused) {
         if(end) _ended = end
         else output.push(data)
@@ -65,7 +64,6 @@ function duplex (reader, read) {
       } else {
         if(end) s.emit('end')
         else {
-          console.log('data', data)
           s.emit('data', data)
           read(null, next)
         }
