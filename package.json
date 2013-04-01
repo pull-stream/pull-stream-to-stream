@@ -1,7 +1,7 @@
 {
   "name": "pull-stream-to-stream",
   "description": "",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "homepage": "https://github.com/dominictarr/pull-stream-to-stream",
   "repository": {
     "type": "git",
