@@ -28,7 +28,7 @@ function duplex (reader, read) {
       if(!input.length)
         s.emit('drain')
     }
-    else if(ended)
+    else if(ended = ended || end)
       cb(ended)
     else
       cbs.push(cb)
@@ -62,7 +62,7 @@ function duplex (reader, read) {
         else output.push(data)
         waiting = true
       } else {
-        if(end) s.emit('end')
+        if(ended = ended || end) s.emit('end')
         else {
           s.emit('data', data)
           read(null, next)
