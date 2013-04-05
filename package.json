@@ -8,10 +8,10 @@
     "url": "git://github.com/dominictarr/pull-stream-to-stream.git"
   },
   "dependencies": {
-    "pull-stream": "~2.9"
+    "pull-stream": "~2.10"
   },
   "devDependencies": {
-    "tape": "~0.3.2"
+    "tape": "~0.2"
   },
   "scripts": {
     "test": "set -e; for t in test/*.js; do node $t; done"
