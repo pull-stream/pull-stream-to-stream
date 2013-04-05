@@ -17,8 +17,9 @@ function duplex (reader, read) {
   }
 
   s.end = function () {
-    ended = true
-    if(cbs.length)
+    if(read)
+      read(ended = true, cbs.length ? cbs.shift() : function () {})
+    else if(cbs.length)
       cbs.shift()(true)      
   }
 
@@ -83,9 +84,12 @@ function duplex (reader, read) {
   }
 
   s.destroy = function () {
+    if(!ended && read)
+      read(ended = true, function () {})
     ended = true
     if(cbs.length)
       cbs.shift()(true)
+
     s.emit('close')
   }
 
