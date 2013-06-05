@@ -8,9 +8,10 @@
     "url": "git://github.com/dominictarr/pull-stream-to-stream.git"
   },
   "dependencies": {
-    "pull-stream": "~2.10"
+    "pull-core": "~1.0.0"
   },
   "devDependencies": {
+    "pull-stream": ">=2.10 <3",
     "tape": "~0.2"
   },
   "scripts": {
