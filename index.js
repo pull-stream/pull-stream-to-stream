@@ -1,8 +1,14 @@
 
 var Stream = require('stream')
-var pull   = require('pull-stream')
+var addPipe = require('pull-core').addPipe
 
 module.exports = duplex
+
+var next = (
+  'undefined' === typeof setImmediate
+  ? process.nextTick
+  : setImmediate
+)
 
 function duplex (reader, read) {
   var cbs = [], input = [], ended
@@ -23,7 +29,7 @@ function duplex (reader, read) {
       cbs.shift()(true)      
   }
 
-  s.source = pull.addPipe(function (end, cb) {
+  s.source = addPipe(function (end, cb) {
     if(input.length) {
       cb(null, input.shift())
       if(!input.length)
@@ -42,7 +48,7 @@ function duplex (reader, read) {
 
   s.sink = function (_read) {
     read = _read
-    process.nextTick(drain)
+    next(drain)
   }
 
   if(read) s.sink(read)
