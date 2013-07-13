@@ -42,6 +42,7 @@ test('header', function (t) {
       data += d
     })
     stream.on('end', function () {
+      server.close()
       console.log('END !')
       //stream.end()
       //server.close()
