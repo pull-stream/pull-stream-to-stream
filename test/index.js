@@ -73,8 +73,9 @@ test('header', function (t) {
     })
     stream.on('end', function () {
       console.log('END !')
-      //stream.end()
-      //server.close()
+      stream.end()
+      server.close()
+      
       var nums = data.split('\n').map(Number)
       nums.pop()
       t.deepEqual(nums, a)
