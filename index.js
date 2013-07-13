@@ -65,11 +65,14 @@ function duplex (reader, read) {
 
     read(null, function next (end, data) {
       if(s.paused) {
-        if(end) _ended = end
+        if(end === true) _ended = end
+        else if(end) s.emit('error', end)
         else output.push(data)
         waiting = true
       } else {
-        if(ended = ended || end) s.emit('end')
+        if(end && (ended = end) !== true)
+          s.emit('error', end)
+        else if(ended = ended || end) s.emit('end')
         else {
           s.emit('data', data)
           read(null, next)
@@ -85,7 +88,7 @@ function duplex (reader, read) {
 
   s.resume = function () {
     s.paused = false
-    if(waiting) drain()
+    drain()
     return s
   }
 
