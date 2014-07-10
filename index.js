@@ -11,6 +11,11 @@ var next = (
 )
 
 function duplex (reader, read) {
+  if(reader && 'object' === typeof reader) {
+    read = reader.source
+    reader = reader.sink
+  }
+
   var cbs = [], input = [], ended
   var s = new Stream()
   s.writable = s.readable = true
