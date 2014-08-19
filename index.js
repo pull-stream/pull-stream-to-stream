@@ -4,6 +4,15 @@ var addPipe = require('pull-core').addPipe
 
 module.exports = duplex
 
+
+module.exports.source = function (source) {
+  return duplex(null, source)
+}
+
+module.exports.sink = function (sink) {
+  return duplex(sink, null)
+}
+
 var next = (
   'undefined' === typeof setImmediate
   ? process.nextTick
@@ -109,3 +118,4 @@ function duplex (reader, read) {
 
   return s
 }
+
