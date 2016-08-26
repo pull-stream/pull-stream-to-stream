@@ -41,12 +41,15 @@ require('tape')('test end async', function (t) {
 
   t.plan(10)
 
-  var source = pull(pull.infinite(), pull.take(10))
-  var cs = CS(pull.asyncMap(function (val, cb) {
-    setTimeout(function () {
-      cb(null, val)
-    }, 10)
-  }), source)
+  var cs = CS(pull(
+    pull.infinite(),
+    pull.take(10),
+    pull.asyncMap(function (val, cb) {
+      setTimeout(function () {
+        cb(null, val)
+      }, 10)
+    })
+  ))
 
   cs.on('data', function (data) {
     t.ok(data)
