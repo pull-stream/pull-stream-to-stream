@@ -41,15 +41,11 @@ require('tape')('test end async', function (t) {
 
   t.plan(10)
 
-  var cs = CS(pull(
-    pull.infinite(),
-    pull.take(10),
-    pull.asyncMap(function (val, cb) {
-      setTimeout(function () {
-        cb(null, val)
-      }, 10)
-    })
-  ))
+  var cs = CS(pull.asyncMap(function (val, cb) {
+    setTimeout(function () {
+      cb(null, val)
+    }, 10)
+  }))
 
   cs.on('data', function (data) {
     t.ok(data)
@@ -58,6 +54,10 @@ require('tape')('test end async', function (t) {
   cs.on('end', function () {
     t.end()
   })
+
+  for (var i=0;i<10;i++) {
+    cs.write(Buffer('world'))
+  }
 
   cs.end()
 })

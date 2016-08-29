@@ -20,18 +20,21 @@ test('header', function (t) {
     defer.pipe(d.sink) //pass output to source
 
     //pull one item "HEADER" from source.
-    d.source.pipe(function (read) {
-      read(null, function (err, len) {
-        defer.resolve(
-          pull.infinite()
-          .pipe(pull.take(Number(len)))
-          .pipe(pull.map(function (n) {
-            a.push(n)
-            return n + '\n'
-          }))
-        )
-      })
-    })
+    pull(
+      d.source,
+      function (read) {
+        read(null, function (err, len) {
+          defer.resolve(
+            pull.infinite()
+              .pipe(pull.take(Number(len)))
+              .pipe(pull.map(function (n) {
+                a.push(n)
+                return n + '\n'
+              }))
+          )
+        })
+      }
+    )
 
   }).listen(0, function () {
     var stream = net.connect(server.address().port)
@@ -53,4 +56,3 @@ test('header', function (t) {
     })
   })
 })
-

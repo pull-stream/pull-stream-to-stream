@@ -1,6 +1,5 @@
 
 var Stream = require('stream')
-var addPipe = require('pull-core').addPipe
 
 module.exports = duplex
 
@@ -18,7 +17,7 @@ var next = (
   ? process.nextTick
   : setImmediate
 )
-
+var pull = require('pull-stream')
 function duplex (reader, read) {
   if(reader && 'object' === typeof reader) {
     read = reader.source
@@ -37,13 +36,17 @@ function duplex (reader, read) {
   }
 
   s.end = function () {
-    if(read)
-      read(ended = true, cbs.length ? cbs.shift() : function () {})
-    else if(cbs.length)
-      cbs.shift()(true)      
+    if(read) {
+      if (input.length)
+        drain()
+      else
+        read(ended = true, cbs.length ? cbs.shift() : function () {})
+    } else if(cbs.length) {
+      cbs.shift()(true)
+    }
   }
 
-  s.source = addPipe(function (end, cb) {
+  s.source = function (end, cb) {
     if(input.length) {
       cb(null, input.shift())
       if(!input.length)
@@ -53,9 +56,11 @@ function duplex (reader, read) {
       cb(ended)
     else
       cbs.push(cb)
-  })
+  }
 
-  if(reader) reader(s.source)
+  var n
+  if(reader) n = reader(s.source)
+  if(n && !read) read = n
 
   var output = [], _cbs = []
   var _ended = false, waiting = false
@@ -118,4 +123,3 @@ function duplex (reader, read) {
 
   return s
 }
-
