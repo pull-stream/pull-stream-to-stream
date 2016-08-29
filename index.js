@@ -24,7 +24,7 @@ function duplex (reader, read) {
     reader = reader.sink
   }
 
-  var cbs = [], input = [], ended
+  var cbs = [], input = [], ended, needDrain
   var s = new Stream()
   s.writable = s.readable = true
   s.write = function (data) {
@@ -32,7 +32,11 @@ function duplex (reader, read) {
       cbs.shift()(null, data)
     else
       input.push(data)
-    return !! cbs.length
+
+    if (!cbs.length) {
+      needDrain = true
+    }
+    return !!cbs.length
   }
 
   s.end = function () {
@@ -52,10 +56,19 @@ function duplex (reader, read) {
       if(!input.length)
         s.emit('drain')
     }
-    else if(ended = ended || end)
-      cb(ended)
-    else
-      cbs.push(cb)
+    else {
+      if(ended = ended || end)
+        cb(ended)
+      else
+        cbs.push(cb)
+
+      if (needDrain) {
+        next(function () {
+          s.emit('drain')
+          needDrain = false
+        })
+      }
+    }
   }
 
   var n
