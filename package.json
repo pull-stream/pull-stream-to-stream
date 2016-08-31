@@ -7,10 +7,9 @@
     "type": "git",
     "url": "git://github.com/dominictarr/pull-stream-to-stream.git"
   },
-  "dependencies": {
-  },
   "devDependencies": {
-    "pull-stream": ">=2.10 <3",
+    "pull-stream": "^3.4.4",
+    "pull-defer": "^0.2.2",
     "tape": "1.0.4"
   },
   "scripts": {
@@ -19,3 +18,5 @@
   "author": "Dominic Tarr <dominic.tarr@gmail.com> (http://dominictarr.com)",
   "license": "MIT"
 }
+
+

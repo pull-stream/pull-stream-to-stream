@@ -17,7 +17,7 @@ var next = (
   ? process.nextTick
   : setImmediate
 )
-var pull = require('pull-stream')
+
 function duplex (reader, read) {
   if(reader && 'object' === typeof reader) {
     read = reader.source
@@ -136,3 +136,4 @@ function duplex (reader, read) {
 
   return s
 }
+
