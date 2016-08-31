@@ -1,28 +1,33 @@
 var pull   = require('pull-stream')
+var defer  = require('pull-defer')
 var duplex = require('../')
 var net    = require('net')
 
 var test = require('tape')
-/*
+
 test('simple', function (t) {
 
   var server = net.createServer(function (stream) {
  
     stream.pipe(
     duplex(
-      pull.map(function (e) {
-        return '' + e
-      }).pipe(pull.collect(function (err, ary) {
-        console.log(ary)
-        t.end()
-      })),
-      pull.infinite()
-      .pipe(pull.asyncMap(function (e, cb) {
-        process.nextTick(function () {
-          cb(null, e.toString() + '\n')
+      pull(
+        pull.map(function (e) {
+          return '' + e
+        }), pull.collect(function (err, ary) {
+          console.log(ary)
+          t.end()
         })
-      }))
-      .pipe(pull.take(10))
+      ),
+      pull(
+        pull.infinite(),
+        pull.asyncMap(function (e, cb) {
+          process.nextTick(function () {
+            cb(null, e.toString() + '\n')
+          })
+        }),
+        pull.take(10)
+      )
     )).on('end', function () {
       console.log('PULL -- END')
     })
@@ -36,27 +41,27 @@ test('simple', function (t) {
     stream.end()
   })
 })
-*/
+
 
 test('header', function (t) {
   var a = []
 
   var server = net.createServer(function (stream) {
-    var defer = pull.defer()
+    var source = defer.source()
 
     stream.pipe(
       duplex(function (read) {
         read(null, function (err, len) {
-          defer.resolve(
-            pull.infinite()
-            .pipe(pull.take(Number(len)))
-            .pipe(pull.map(function (n) {
+          source.resolve(pull(
+            pull.infinite(),
+            pull.take(Number(len)),
+            pull.map(function (n) {
               a.push(n)
               return n + '\n'
-            }))
-          )
+            })
+          ))
         })
-      }, defer)
+      }, source)
       .on('end', function () {
         console.log('PULL -- END')
       })
@@ -83,4 +88,8 @@ test('header', function (t) {
     })
   })
 })
+
+
+
+
 

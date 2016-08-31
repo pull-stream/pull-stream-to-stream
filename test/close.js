@@ -9,7 +9,7 @@ require('tape')('test close', function (t) {
   t.plan(10)
 
   var i = 10
-  var cs = CS(null, pull.infinite().pipe(pull.through(null, function () {
+  var cs = CS(null, pull(pull.infinite(), pull.through(null, function () {
     console.log('CLOSE')
     t.end()
   })))
@@ -26,7 +26,7 @@ require('tape')('test end', function (t) {
   t.plan(10)
 
   var i = 10
-  var cs = CS(null, pull.infinite().pipe(pull.through(null, function () {
+  var cs = CS(null, pull(pull.infinite(), pull.through(null, function () {
     console.log('ENDED')
     t.end()
   })))

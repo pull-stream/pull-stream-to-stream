@@ -1,6 +1,7 @@
 var pull   = require('pull-stream')
 var duplex = require('../')
 var net    = require('net')
+var defer  = require('pull-defer')
 
 var test = require('tape')
 
@@ -8,7 +9,7 @@ test('header', function (t) {
   var a = []
 
   var server = net.createServer(function (stream) {
-    var defer = pull.defer()
+    var source = defer.source()
 
     var d = duplex()
       .on('end', function () {
@@ -17,21 +18,21 @@ test('header', function (t) {
 
     stream.pipe(d).pipe(stream)
 
-    defer.pipe(d.sink) //pass output to source
+    pull(source, d.sink) //pass output to source
 
     //pull one item "HEADER" from source.
     pull(
       d.source,
       function (read) {
         read(null, function (err, len) {
-          defer.resolve(
-            pull.infinite()
-              .pipe(pull.take(Number(len)))
-              .pipe(pull.map(function (n) {
-                a.push(n)
-                return n + '\n'
-              }))
-          )
+          source.resolve(pull(
+            pull.infinite(),
+            pull.take(Number(len)),
+            pull.map(function (n) {
+              a.push(n)
+              return n + '\n'
+            })
+          ))
         })
       }
     )
@@ -56,3 +57,4 @@ test('header', function (t) {
     })
   })
 })
+
