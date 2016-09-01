@@ -65,8 +65,8 @@ function duplex (reader, read) {
       if (needDrain) {
         next(function () {
           s.emit('drain')
-          needDrain = false
         })
+        needDrain = false
       }
     }
   }
@@ -136,4 +136,3 @@ function duplex (reader, read) {
 
   return s
 }
-
