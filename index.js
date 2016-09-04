@@ -63,10 +63,8 @@ function duplex (reader, read) {
         cbs.push(cb)
 
       if (needDrain) {
-        next(function () {
-          s.emit('drain')
-        })
         needDrain = false
+        s.emit('drain')
       }
     }
   }
@@ -136,3 +134,4 @@ function duplex (reader, read) {
 
   return s
 }
+
