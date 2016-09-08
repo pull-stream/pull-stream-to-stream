@@ -81,7 +81,18 @@ function duplex (reader, read) {
     next(drain)
   }
 
-  if(read) s.sink(read)
+  if(read) {
+    s.sink(read)
+
+    var pipe = s.pipe.bind(s)
+    s.pipe = function (dest, opts) {
+      var res = pipe(dest, opts)
+
+      if(s.paused) s.resume()
+
+      return res
+    }
+  }
 
   function drain () {
     waiting = false
@@ -134,4 +145,3 @@ function duplex (reader, read) {
 
   return s
 }
-
