@@ -74,7 +74,7 @@ function duplex (reader, read) {
   if(n && !read) read = n
 
   var output = [], _cbs = []
-  var _ended = false, waiting = false
+  var _ended = false, waiting = false, busy = false
 
   s.sink = function (_read) {
     read = _read
@@ -96,7 +96,7 @@ function duplex (reader, read) {
 
   function drain () {
     waiting = false
-    if(!read) return
+    if(!read || busy) return
     while(output.length && !s.paused) {
       s.emit('data', output.shift())
     }
@@ -104,7 +104,9 @@ function duplex (reader, read) {
     if(_ended)
       return s.emit('end')
 
+    busy = true
     read(null, function next (end, data) {
+      busy = false
       if(s.paused) {
         if(end === true) _ended = end
         else if(end) s.emit('error', end)
@@ -116,6 +118,7 @@ function duplex (reader, read) {
         else if(ended = ended || end) s.emit('end')
         else {
           s.emit('data', data)
+          busy = true
           read(null, next)
         }
       }
