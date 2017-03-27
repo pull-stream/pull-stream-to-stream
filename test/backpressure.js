@@ -52,3 +52,33 @@ test('backpressure', function (t) {
 
   r.pipe(s)
 })
+
+test('backpressure with constant resume', function (t) {
+  var values = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+  var s = duplex.source(pull(
+    pull.values(values),
+    pull.asyncMap(function (value, cb) {
+      setTimeout(function () {
+        // pass through value with delay
+        cb(null, value)
+      }, 10)
+    })
+  ))
+
+  var timer = setInterval(function () {
+    s.resume()
+  }, 5)
+
+  var output = []
+
+  s.on('data', function (c) {
+    output.push(c)
+  })
+
+  s.once('end', function () {
+    clearInterval(timer)
+    t.deepEqual(output, values, 'End called after all values emitted')
+    t.end()
+  })
+})
