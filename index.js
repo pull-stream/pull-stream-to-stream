@@ -83,6 +83,18 @@ function duplex (reader, read) {
 
   if(read) {
     s.sink(read)
+    s.paused = true
+
+    var on = s.on.bind(s)
+    s.on = (event, listener) => {
+      var res = on(event, listener)
+
+      if (event === 'data' && s.paused) {
+        next(s.resume.bind(s))
+      }
+
+      return res
+    }
 
     var pipe = s.pipe.bind(s)
     s.pipe = function (dest, opts) {

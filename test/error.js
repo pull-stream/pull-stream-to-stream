@@ -12,6 +12,7 @@ tape('test that error is emitted', function (t) {
     t.equal(err, error)
     t.end()
   })
+  s.on('data', () => {})
 })
 
 tape('error when paused', function (t) {
